@@ -1,0 +1,38 @@
+$font-stack:Arial,Helvetica;
+$primary-color:#FFFFFF;
+$secondary-color:
+$dark-color: black;
+
+body{
+    font: 100% $font-stack;
+    color: $primary-color;
+}
+
+section{
+    font: 50% $font-stack;
+    color:aqua;
+}
+
+#p{
+    color:$dark-color;
+    a{
+        font-weight: bold;
+        font-family: $font-stack;
+        &:hover{
+            color: $primary-color;
+        }
+        &:visited{
+            color: $secondary-color;
+        }
+        
+    }
+
+}
+
+ul{
+    color:$primary-color;
+    li{
+        font-family: $font-stack;
+        a{}
+    }
+}

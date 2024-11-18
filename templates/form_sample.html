@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if not form %}
+    <h1>Форма для регистрации</h1>
+    <form class="login_form" method="post">
+        <input class="form-control" type="email" name="email" id="email" placeholder="Введите E-mail">
+        <input class="form-control" type="password" name="password" id="password">
+        <label for="profSelect">Ваша профессия</label>
+        <select class="form-control" name="profession" id="profSelect">
+            <option>Инженер</option>
+            <option>Конструктор</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+{% else %}
+<h1>Вот, что Вы отправили:</h1>
+    <p><b>Ваш Email</b>: {{ form['email'] }}</p>
+    <p><b>Пароль</b>: {{ form['password'] }}</p>
+    <p><b>Ваша профессия:</b> {{ form['profession'] }}</p>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+    <!--подвал-->
+    <br>
+    <footer class="bg-body-tertiary text-center text-lg-start">
+        <!-- Copyright -->
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2024 если кликнуть на эбаут
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!--подвал end-->
+{% endblock %}

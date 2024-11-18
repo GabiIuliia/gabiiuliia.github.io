@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if not form %}
+<h1 class="text-center">Погода в городе</h1>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="alert alert-danger" role="alert">
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+<form class="login-form" method="post">
+    <div class="from-group">
+        <label for="city">Введите город: </label>
+        <input type="text" name="city" id="city" class="form-control">
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Узнать</button>
+</form>
+{% else %}
+<h1 class="text-center">Погода: город {{ form['city'] }}</h1>
+<h2>Температура: {{ params['temper'] }}°С</h2>
+<h2>Ощущается как: {{ params['feel'] }}°С</h2>
+<h2>Давление: {{ params['press'] }} мм.рт.столба</h2>
+<h2>Влажность: {{ params['humid'] }}%</h2>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+<!--подвал-->
+<br>
+<footer class="bg-body-tertiary text-center text-lg-start">
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+        © 2024 С нами по свету
+    </div>
+    <!-- Copyright -->
+</footer>
+<!--подвал end-->
+{% endblock %}

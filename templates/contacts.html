@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-center">Карта, адрес, фото, телефон.</h1>
+    <h1 class="text-center">Напишите нам</h1>
+<form action="" class="mail-form" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+        <b>{{ form.username.label }}</b>:
+        {{ form.username(class="form-control") }}<br>
+        {% for error in form.username.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+    </p>
+    <p>
+        <b>{{ form.phone.label }}</b>:
+        {{ form.phone(class="form-control") }}<br>
+        {% for error in form.phone.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+    </p>
+    <p>
+        <b>{{ form.email.label }}</b>:
+        {{ form.email(class="form-control", type="email") }}<br>
+        {% for error in form.email.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+    </p>
+    <p>
+        <b>{{ form.message.label }}</b>:
+        {{ form.message(class="form-control", cols="25", rows="10") }}<br>
+        {% for error in form.message.errors %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+</form>
+{% endblock %}
+
+{% block footer %}
+    <!--подвал-->
+    <br>
+    <footer class="bg-body-tertiary text-center text-lg-start">
+        <!-- Copyright -->
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2024 С нами по свету
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!--подвал end-->
+{% endblock %}

@@ -1,0 +1,15 @@
+$font-stack:Arial,Helvetica;
+$primary-color:#FFFFFF;
+$secondary-color:
+$dark-color
+
+body{
+    font: 100% $font-stack;
+    color: $primary-color;
+}
+
+section{
+    font: 50% $font-stack;
+    color:aqua;
+}
+

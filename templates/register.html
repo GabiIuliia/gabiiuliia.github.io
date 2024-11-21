@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Авторизация</h1>
+    <h1>Регистрация</h1>
     <form method="post">
         {{ form.hidden_tag() }}
         <div>
@@ -18,13 +18,21 @@
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
+        <div>
+            {{ form.confirm_password.label }}<br>
+            {{ form.confirm_password(size=32) }}<br>
+            {% for error in form.confirm_password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
         <br>
         <div>
-            <button type="submit">Войти</button>
+            <button type="submit">Зарегистрироваться</button>
         </div>
     </form>
-    <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрироваться</a></p>
+    <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
 {% endblock %}
+
 
 {% block footer %}
 <!--подвал-->
@@ -32,9 +40,11 @@
 <footer class="bg-body-tertiary text-center text-lg-start">
     <!-- Copyright -->
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-        © 2024 Авторизация
+        © 2024 Регистрация
     </div>
     <!-- Copyright -->
 </footer>
 <!--подвал end-->
 {% endblock %}
+
+

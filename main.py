@@ -20,17 +20,33 @@ def configurate_app():
     with app.app_context():
         db.create_all()
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    #user = db.session.get(User)
-    #if user is not None:
-    #    print("user " +user.username)
-    form = LoginForm()
-    if form.validate_on_submit():
-        # Здесь должна быть логика для проверки пользователя
-        return redirect(url_for('success'))
-    return render_template('login.html', title='Авторизация', form=form)
+    if request.method == 'GET':
+        form = LoginForm()
+        return render_template('login.html', title='Авторизация', form=form)
+    elif request.method == 'POST':
+        form = LoginForm()
+        if form.validate_on_submit():
+            # Здесь должна быть логика для проверки пользователя
+            user = User.query.filter_by(email=form.email.data).first()
+            if user and user.password_hash == form.password.data:
+                return redirect(url_for('success'))
+        else:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     #user = db.session.get(User)
+#     #if user is not None:
+#     #    print("user " +user.username)
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         # Здесь должна быть логика для проверки пользователя
+#         return redirect(url_for('success'))
+#     return render_template('login.html', title='Авторизация', form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])

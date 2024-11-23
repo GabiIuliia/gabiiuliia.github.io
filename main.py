@@ -3,7 +3,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
 
+from baza import User
 from loginform import LoginForm
+from ormbase import db
 from registrationform import RegistrationForm
 
 app = Flask(__name__)
@@ -19,9 +21,11 @@ def configurate_app():
         db.create_all()
 
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    #user = db.session.get(User)
+    #if user is not None:
+    #    print("user " +user.username)
     form = LoginForm()
     if form.validate_on_submit():
         # Здесь должна быть логика для проверки пользователя
@@ -33,15 +37,19 @@ def login():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(email=form.email.data, password=form.password.data)  # Не забудьте захешировать пароль!
+        user = User(username=form.username.data,email=form.email.data, password_hash=form.password.data)  # Не забудьте захешировать пароль!
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('base'))  # Перенаправляем на главную страницу
+        return redirect(url_for('index'))  # Перенаправляем на главную страницу
     return render_template('register.html', title='Регистрация', form=form)
 
 @app.route('/success')
 def success():
-    return redirect(url_for('base'))
+    return redirect(url_for('index'))
+
+@app.route('/index')
+def index():
+    return render_template("index.html")
 
 if __name__ == '__main__':
     configurate_app()

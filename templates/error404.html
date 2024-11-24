@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-center text-danger">Страница не найдена!</h1>
+    <h2 class="text-center">{{ title }}</h2>
+    <p>Страница, которую Вы хотели посетить не найдена. Начните с <a title="На главную" href="/">главной</a> и пользуйтесь меню.</p>
+{% endblock %}
+
+{% block footer %}
+    <!--подвал-->
+    <br>
+    <footer class="bg-body-tertiary text-center text-lg-start">
+        <!-- Copyright -->
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2024 С нами по свету
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!--подвал end-->
+{% endblock %}

@@ -1,14 +1,25 @@
 from enum import unique
 
+# # Пользователи нашего сайта
+# import datetime
 import sqlalchemy
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
+# с 10
+# from flask_login import UserMixin
+# from sqlalchemy import orm
+# from werkzeug.security import generate_password_hash, check_password_hash
+#
+# from .db_session import SqlAlchemyBase
+import sqlalchemy as sa
+import sqlalchemy.orm as orm
+from sqlalchemy.orm import Session
 
 from main import index
 from ormbase import db  # Предполагаем, что SQLAlchemy инициализирован
 
-# from .db_session import SqlAlchemyBase
+
 #
 # # роль пользователя
 # ACCESS = {
@@ -82,3 +93,37 @@ class Comment(db.Model):
 #
 #     def __repr__(self):
 #         return f'<Объект news, новость {self.id}>'
+
+
+# ORM - Object Relational Mapping - объектно-реляционное отображение
+# pip install sqlalchemy
+
+
+SqlAlchemyBase = orm.declarative_base()
+
+__factory = None
+
+
+def global_init(db_file):
+    global __factory
+
+    if __factory:
+        return
+
+    if not db_file or not db_file.strip():
+        raise Exception("Необходимо указать файл БД при вызове global_init")
+
+    conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
+    print(f'Мы подключились к БД по адресу: {conn_str}')
+
+    engine = sa.create_engine(conn_str, echo=False)
+    __factory = orm.sessionmaker(bind=engine)
+
+    from . import __all_models
+
+    SqlAlchemyBase.metadata.create_all(engine)
+
+
+def create_session() -> Session:
+    global __factory
+    return __factory()

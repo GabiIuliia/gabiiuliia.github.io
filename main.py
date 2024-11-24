@@ -11,7 +11,9 @@ import requests
 
 from data.users import User
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, flash
+from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import current_user
 
 from data.baza import User
 from loginform import LoginForm
@@ -35,6 +37,23 @@ def configurate_app():
     with app.app_context():
         db.create_all()
 
+# обработка ошибки сервера 401
+# Пользователь не авторизован
+# для просмотра данной страницы
+@app.errorhandler(401)
+def http_401_handler(error):
+    return render_template('error401.html', title='Требуется аутентификация')
+
+
+
+# обработка ошибки сервера 404
+# Страница не найдена
+@app.errorhandler(404)
+def http_404_handler(error):
+    return render_template('error404.html', title='Контент не найден')
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -49,12 +68,19 @@ def login():
 
     return render_template('login.html', title='Авторизация', form=form)
 
-# @login_manager.user_loader
-# def user_loader(user_id):
-#     db_sess = db_session.create_session()
-#     return db_sess.query(User).get(user_id)
-#
-#
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
+
+# создаем сессию по проверке в базе, есть ли он
+@login_manager.user_loader
+def user_loader(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
+
+# проверка сессии
 # @app.route('/session_test')
 # def session_test():
 #     visit_count = session.get('visit_count', 0)
@@ -62,7 +88,7 @@ def login():
 #     # session.pop('visit_count', None) # если надо программно уничтожить сессию
 #     return make_response(f'Вы посетили данную страницу {visit_count} раз.')
 #
-#
+# проверка куки
 # @app.route('/cookie_test')
 # def cookie_test():
 #     visit_count = int(request.cookies.get('visit_count', 0))
@@ -82,6 +108,70 @@ def news():
         news_list = json.loads(f.read())
     print(news_list)
     return render_template('news.html', news=news_list, title='Новости')
+
+# добавление новости
+@app.route('/add', methods=['GET', 'POST'])
+@login_required
+def add_news():
+    form = NewsForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        news = News()
+        news.title = form.title.data
+        news.content = form.content.data
+        news.is_private = form.is_private.data
+        current_user.news.append(news)
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect('/blog')
+    return render_template('add_news.html', title='Добавление новости',
+                           form=form)
+
+# редактирование новости
+@app.route('/blog/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(id):
+    form = NewsForm()
+    if request.method == 'GET':
+        db_sess = db_session.create_session()
+        news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
+
+        if news:
+            form.title.data = news.title
+            form.content.data = news.content
+            form.is_private.data = news.is_private
+            form.submit.data = 'Отредактировать'
+        else:
+            abort(404)
+
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
+
+        if news:
+            news.title = form.title.data
+            news.content = form.content.data
+            news.is_private = form.is_private.data
+            db_sess.commit()
+            return redirect('/blog')
+        else:
+            abort(404)
+    return render_template('add_news.html', title='Редактирование новости',
+                           form=form)
+
+# удаление новости
+@app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.id == id, News.user == current_user).first()
+
+    if news:
+        db_sess.delete(news)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/blog')
 
 
 # @app.route('/register', methods=['GET', 'POST'])
@@ -115,7 +205,7 @@ def news():
 #         user = db_sess.query(User).filter(User.email == form.email.data).first()
 #         if user and user.check_password(form.password.data):
 #             login_user(user, remember=form.remember_me.data)
-#             return redirect('/')  # request.url, либо на нужную страницу
+#             return redirect('/')  # request.url- вернуться туда откуда пришел, либо на нужную страницу
 #         return render_template('login.html', title='Ошибка авторизации',
 #                                message='Неправильная пара: логин - пароль!',
 #                                form=form)

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-center text-danger">Доступ закрыт</h1>
+    <h2 class="text-center">{{ title }}</h2>
+    <p>Для того, чтобы посетить данную страницу, Вам необходимо <a href="/login">авторизоваться</a>.
+    Если Вы до сих пор не зарегистрированы, то пройдите процедуру <a href="/register">регистрации.</a></p>
+{% endblock %}
+
+{% block footer %}
+    <!--подвал-->
+    <br>
+    <footer class="bg-body-tertiary text-center text-lg-start">
+        <!-- Copyright -->
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2024 С нами по свету
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!--подвал end-->
+{% endblock %}

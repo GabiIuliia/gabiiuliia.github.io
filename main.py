@@ -1,9 +1,8 @@
-from flask import Flask, render_template, redirect, url_for
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email
+from data.users import User
 
-from baza import User
+from flask import Flask, render_template, redirect, url_for
+
+from data.baza import User
 from loginform import LoginForm
 from ormbase import db
 from registrationform import RegistrationForm

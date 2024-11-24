@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Записи нашего блога</h1>
+    {% for item in news %}
+        <div class="col border rounded">
+            <h2>{{ item.title }}</h2>
+            <div>
+                {{ item.content }}
+            </div>
+            <div>
+                Автор: {{ item.user.name }},
+                Дата новости: {{ item.create_date }}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block footer %}
+    <!--подвал-->
+    <br>
+    <footer class="bg-body-tertiary text-center text-lg-start">
+        <!-- Copyright -->
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2024 Блог
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!--подвал end-->
+{% endblock %}

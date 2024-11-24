@@ -16,7 +16,8 @@
     {% if current_user.is_authenticated and current_user == item.user %}
     <div>
         <a class="btn btn-primary btn-sm" href="/blog/{{ item.id }}">Изменить</a>&nbsp;
-        <a class="btn btn-danger btn-sm" href="/news_delete/{{ item.id }}">Удалить</a>
+        <a class="btn btn-danger btn-sm" href="/news_delete/{{ item.id }}"
+        onclick="return confirm('Вы действительно хотите удалить новость №{{ item.id }} {{ item.title }}?')">Удалить</a>
     </div><br>
     {% endif %}
 </div><br>

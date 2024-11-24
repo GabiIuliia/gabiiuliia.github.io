@@ -19,13 +19,14 @@
     <header>
         <nav class="navbar navbar-light bg-light">
             <a href="/" class="navbar-brand">Главная</a>
-            <a href="/contacts" class="navbar-brand">Контакты</a>
             <a href="/about" class="navbar-brand">О нас</a>
-             {% if current_user.is_authenticated %}
-            <a href="/logout" class="navbar-brand">{{ current_user.name }}</a>
+            <a href="/blog" class="navbar-brand">Блог</a>
+            <a href="/contacts" class="navbar-brand">Контакты</a>
+            {% if current_user.is_authenticated %}
+            <a href="/logout" title="Нажмите, чтобы выйти из аккаунта" class="btn btn-danger">{{ current_user.name }}</a>
             {% else %}
-            <a href="/register">Регистрация</a>
-            <a href="/login">Войти</a>
+            <a class="btn btn-primary" href="/register">Регистрация</a>
+            <a class="btn btn-success" href="/login">Войти</a>
             {% endif %}
         </nav>
     </header>

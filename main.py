@@ -1,3 +1,25 @@
+# import configparser
+# import datetime
+# import json
+# import os
+# from data import db_session
+# from data.users import User
+# from data.news import News
+# from forms.add_news import NewsForm
+# from forms.user import RegisterForm
+#
+# import requests
+#
+# from data.users import User
+#
+# from flask import Flask, render_template, redirect, url_for, flash, request, abort
+# from flask_login import LoginManager, login_user, logout_user, login_required
+# from flask_login import current_user
+#
+# from data import db_session
+# from loginform import LoginForm
+# from ormbase import db
+# from registrationform import RegistrationForm
 import configparser
 import datetime
 import json
@@ -6,23 +28,26 @@ from data import db_session
 from data.users import User
 from data.news import News
 from forms.user import RegisterForm
+from forms.add_news import NewsForm
+
 
 import requests
-
-from data.users import User
-
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, url_for, request, render_template, abort, jsonify
+from flask import flash, redirect, make_response, session
 from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_login import current_user
+from werkzeug.utils import secure_filename
 
-from data.baza import User
-from loginform import LoginForm
+from forms.loginform import LoginForm
+from mailform import MailForm
 from ormbase import db
 from registrationform import RegistrationForm
 
 app = Flask(__name__)
-# login_manager = LoginManager()
-# login_manager.init_app(app)  # привязали менеджер авторизации к приложению
+login_manager = LoginManager()
+login_manager.init_app(app)  # привязали менеджер авторизации к приложению
+
+
 #
 # app.config['SECRET_KEY'] = 'too_short_key'
 # app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -37,13 +62,13 @@ def configurate_app():
     with app.app_context():
         db.create_all()
 
+
 # обработка ошибки сервера 401
 # Пользователь не авторизован
 # для просмотра данной страницы
 @app.errorhandler(401)
 def http_401_handler(error):
     return render_template('error401.html', title='Требуется аутентификация')
-
 
 
 # обработка ошибки сервера 404
@@ -53,20 +78,23 @@ def http_404_handler(error):
     return render_template('error404.html', title='Контент не найден')
 
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if request.method == 'POST':
         form = LoginForm()
         if form.validate_on_submit():
-            user = User.query.filter_by(email=form.email.data).first()
-            if user and user.password_hash == form.password.data:
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).filter_by(email=form.email.data).first()
+            print('user ' + user.__str__())
+            if user and user.check_password(password=form.password.data):
+                login_user(user, remember=form.remember_me.data, force=True)
                 return redirect(url_for('success'))
             else:
                 flash("Unknown user or wrong password")
 
     return render_template('login.html', title='Авторизация', form=form)
+
 
 @app.route('/logout')
 @login_required
@@ -74,11 +102,13 @@ def logout():
     logout_user()
     return redirect('/')
 
+
 # создаем сессию по проверке в базе, есть ли он
 @login_manager.user_loader
 def user_loader(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
+
 
 # проверка сессии
 # @app.route('/session_test')
@@ -109,6 +139,7 @@ def news():
     print(news_list)
     return render_template('news.html', news=news_list, title='Новости')
 
+
 # добавление новости
 @app.route('/add', methods=['GET', 'POST'])
 @login_required
@@ -126,6 +157,7 @@ def add_news():
         return redirect('/blog')
     return render_template('add_news.html', title='Добавление новости',
                            form=form)
+
 
 # редактирование новости
 @app.route('/blog/<int:id>', methods=['GET', 'POST'])
@@ -158,6 +190,13 @@ def edit_news(id):
             abort(404)
     return render_template('add_news.html', title='Редактирование новости',
                            form=form)
+
+@app.route('/blog')
+def blog():
+    # if current_user.is_admin():
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.is_private == False)
+    return render_template('blog.html', title='Новости', news=news)
 
 # удаление новости
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
@@ -221,21 +260,29 @@ def news_delete(id):
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data,email=form.email.data, password_hash=form.password.data)  # Не забудьте захешировать пароль!
-        db.session.add(user)
-        db.session.commit()
+        user = User(username=form.username.data, email=form.email.data,
+                    password_hash=form.password.data)  # Не забудьте захешировать пароль!
+        dbsession = db_session.create_session()
+        user.set_password(form.password.data)
+        dbsession.add(user)
+        dbsession.commit()
         return redirect(url_for('index'))  # Перенаправляем на главную страницу
     return render_template('register.html', title='Регистрация', form=form)
+
 
 @app.route('/success')
 def success():
     return redirect(url_for('index'))
 
+
+@app.route('/')
 @app.route('/index')
 def index():
     return render_template("index.html")
 
+
 if __name__ == '__main__':
+    db_session.global_init('db/property.db')
     configurate_app()
     app.run(debug=True)
 

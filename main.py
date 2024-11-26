@@ -1,25 +1,3 @@
-# import configparser
-# import datetime
-# import json
-# import os
-# from data import db_session
-# from data.users import User
-# from data.news import News
-# from forms.add_news import NewsForm
-# from forms.user import RegisterForm
-#
-# import requests
-#
-# from data.users import User
-#
-# from flask import Flask, render_template, redirect, url_for, flash, request, abort
-# from flask_login import LoginManager, login_user, logout_user, login_required
-# from flask_login import current_user
-#
-# from data import db_session
-# from loginform import LoginForm
-# from ormbase import db
-# from registrationform import RegistrationForm
 import configparser
 import datetime
 import json
@@ -44,13 +22,15 @@ from forms.loginform import LoginForm
 from mailform import MailForm
 from ormbase import db
 from registrationform import RegistrationForm
+from telegram_bot import send_message_to_telegram
+
 
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)  # привязали менеджер авторизации к приложению
 
 
-#
+
 # app.config['SECRET_KEY'] = 'too_short_key'
 # app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
@@ -69,7 +49,7 @@ def configurate_app():
 @app.route('/index', methods=['GET', 'POST'])
 def weather():
     if request.method == 'GET':
-        return render_template('index.html', title='Погода', form=None)
+        return render_template('index.html', title='Главная', form=None)
     elif request.method == 'POST':
         config.read('settings.ini')
         city = request.form['city']
@@ -98,7 +78,7 @@ def weather():
     params['press'] = temp['pressure']
     params['humid'] = temp['humidity']
 
-    return render_template('/', title=f'Погода в городе {city}', form=request.form, params=params)
+    return render_template('index.html', title=f'Погода в городе {city}', form=request.form, params=params)
 
 
 # обработка ошибки сервера 401
@@ -133,22 +113,9 @@ def contacts():
         """
 
         # Отправка сообщения в Telegram
-        telegram_token = 'YOUR_BOT_TOKEN'  # Замените на ваш токен
-        chat_id = 'YOUR_CHAT_ID'  # Замените на ваш chat_id
-        telegram_url = f'https://api.telegram.org/bot{telegram_token}/sendMessage'
-
-        # Формируем данные для запроса
-        payload = {
-            'chat_id': chat_id,
-            'text': text,
-            'parse_mode': 'HTML'
-        }
-
-        # Отправляем сообщение в Telegram
-        try:
-            requests.post(telegram_url, json=payload)
-        except Exception as e:
-            print(f"Ошибка при отправке сообщения в Telegram: {e}")
+        telegram_token = '7699939072:AAG1_hl8gEDp4mOmOeYX56g-2KNcij2jlvQ'  # Токен вашего бота
+        chat_id = '987654321'  # Замените на ваш chat_id
+        send_message_to_telegram(telegram_token, chat_id, text)  # Вызов функции отправки сообщения
 
         text_to_user = f"""
         Уважаемый (ая) {name}!
@@ -161,11 +128,74 @@ def contacts():
         принято рассмотрению.
         Отправлено со страницы: {request.url}.
         """
-
+        # Здесь вы можете отправить пользователю подтверждение по электронной почте, если это необходимо
         return render_template('mailresult.html',
                                title='Ваши данные',
                                params=params)
     return render_template('contacts.html', title='Наши контакты', form=form)
+
+# @app.route('/contacts', methods=['GET', 'POST'])
+# def contacts():
+#     form = MailForm()
+#     params = {}
+#     if form.validate_on_submit():
+#         name = form.username.data  # получили имя с формы
+#         params['name'] = name  # добавили ключ и значение к словарю params
+#         phone = form.phone.data
+#         params['phone'] = phone
+#         email = form.email.data
+#         params['email'] = email
+#         message = form.message.data
+#         params['message'] = message
+#         params['page'] = request.url
+#
+#         text = f"""
+#         Пользователь {name} оставил Вам сообщение:
+#         {message}
+#         Его телефон: {phone},
+#         E-mail: {email},
+#         Cтраница: {request.url}.
+#         """
+#
+#         # Отправка сообщения в Telegram
+#         telegram_token = 'YOUR_BOT_TOKEN'  # Замените на ваш токен
+#         chat_id = 'YOUR_CHAT_ID'  # Замените на ваш chat_id
+#         telegram_url = f'https://api.telegram.org/bot{telegram_token}/sendMessage'
+#
+#         # Формируем данные для запроса
+#         payload = {
+#             'chat_id': chat_id,
+#             'text': text,
+#             'parse_mode': 'HTML'
+#         }
+#
+#         # Отправляем сообщение в Telegram
+#         try:
+#             requests.post(telegram_url, json=payload)
+#         except Exception as e:
+#             print(f"Ошибка при отправке сообщения в Telegram: {e}")
+#
+#         text_to_user = f"""
+#         Уважаемый (ая) {name}!
+#         Ваши данные:
+#         Телефон: {phone},
+#         E-mail: {email},
+#         успешно получены.
+#         Ваше сообщение:
+#         {message}
+#         принято рассмотрению.
+#         Отправлено со страницы: {request.url}.
+#         """
+#
+#         return render_template('mailresult.html',
+#                                title='Ваши данные',
+#                                params=params)
+#     return render_template('contacts.html', title='Наши контакты', form=form)
+
+
+
+
+
 # @app.route('/contacts', methods=['GET', 'POST'])
 # def contacts():
 #     form = MailForm()
@@ -278,7 +308,7 @@ def news():
     with open("news.json", "rt", encoding="utf-8") as f:
         news_list = json.loads(f.read())
     print(news_list)
-    return render_template('news.html', news=news_list, title='Новости')
+    return render_template('news.html', news=news_list, title='Отзывы')
 
 
 # добавление новости
@@ -296,7 +326,7 @@ def add_news():
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/blog')
-    return render_template('add_news.html', title='Добавление новости',
+    return render_template('add_news.html', title='Добавление отзыва',
                            form=form)
 
 
@@ -329,7 +359,7 @@ def edit_news(id):
             return redirect('/blog')
         else:
             abort(404)
-    return render_template('add_news.html', title='Редактирование новости',
+    return render_template('add_news.html', title='Редактирование отзыва',
                            form=form)
 
 
@@ -338,7 +368,7 @@ def blog():
     # if current_user.is_admin():
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.is_private == False)
-    return render_template('blog.html', title='Новости', news=news)
+    return render_template('blog.html', title='Отзывы', news=news)
 
 
 # удаление новости
@@ -422,6 +452,7 @@ if __name__ == '__main__':
     db_session.global_init('db/property.db')
     configurate_app()
     app.run(debug=True)
+
 
 # # http://localhost:5000/two-params/Victor/12
 # @app.route('/two-params/<username>/<int:number>')

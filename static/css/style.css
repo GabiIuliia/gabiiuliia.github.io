@@ -257,3 +257,20 @@ padding: 20px;
 .go-top--show {
     display: block;
 }
+
+/* Установка высоты контейнера для адаптивности*/
+#calculator-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* Соотношение 16:9 */
+}
+
+#calculator-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none; /* Убираем рамку */
+    border-radius: 15px;
+}

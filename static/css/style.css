@@ -22,13 +22,13 @@ header {
     padding-left: 20px;
     margin-right: 10px;
     margin-left: 10px;
-    border-bottom-left-radius: 10px; /* Скругление нижнего левого угла */
-    border-bottom-right-radius: 10px; /* Скругление нижнего правого угла */
+    border-bottom-left-radius: 15px; /* Скругление нижнего левого угла */
+    border-bottom-right-radius: 15px; /* Скругление нижнего правого угла */
 }
 
 
 .navbar-brand {
-    display: flex;
+
     align-items: center;
     flex-wrap: wrap;
     width: 100%;
@@ -62,7 +62,7 @@ header {
 }
 
 .navbar-nav .nav-link {
-    color: #61759D;
+    color: #12203B;
 }
 
 .navbar-nav .nav-link:hover {
@@ -95,7 +95,7 @@ main {
 }
 
 label {
-    color: #61759D;
+    color: #061126;
 }
 
 /* Хлебные крошки */
@@ -224,7 +224,8 @@ form.login-form {
 margin-left: auto;
 margin-right: auto;
 max-width: 600;
-background-color: #00B358;
+background-color:  #61759D;
+color: #061126;
 border: 1px solid gray;
 border-radius: 5px;
 padding: 20px;
@@ -237,9 +238,9 @@ padding: 20px;
     bottom: 20px; /* положения */
     cursor: pointer; /* рука, как для ссылки */
     font-size: 18px;
-    color: rgba(0, 51, 153, 0.8);
+    color: rgba(0, 0, 0, 0.8);
     border-radius: 50%; /* квадрат в круг */
-    background-color: rgba(0, 51, 153, 0.6);
+    background-color: rgba(0, 0, 0, 0.6);
     padding: 8px 15px 12px 15px;
     z-index: 9999; /* над всеми элементами */
     display: none; /* изначально кнопку не видно */
@@ -248,7 +249,7 @@ padding: 20px;
 /* поведение при наведении мыши */
 .go-top:hover {
     color: rgba(0, 51, 153, 0.95);
-    border: 1px solid rgba(255, 0, 0, 0.75);
+    border: 1px solid rgba(0, 100, 0, 0.75);
     background-color: rgba(100, 51, 153, 0.85);
 }
 

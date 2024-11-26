@@ -24,12 +24,14 @@ import configparser
 import datetime
 import json
 import os
+from operator import index
+
+from config_test import config
 from data import db_session
 from data.users import User
 from data.news import News
 from forms.user import RegisterForm
 from forms.add_news import NewsForm
-
 
 import requests
 from flask import Flask, url_for, request, render_template, abort, jsonify
@@ -63,6 +65,42 @@ def configurate_app():
         db.create_all()
 
 
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
+def weather():
+    if request.method == 'GET':
+        return render_template('index.html', title='Погода', form=None)
+    elif request.method == 'POST':
+        config.read('settings.ini')
+        city = request.form['city']
+        if len(city) < 2:
+            flash('Город не введен или введен не полностью')
+            return redirect(request.url)
+        key = config['Weather']['key']
+        # return render_template('weather.html', title=f'Погода в городе {city}', form=request.form)
+
+    res = requests.get('http://api.openweathermap.org/data/2.5/find',
+                       params={'q': city,
+                               'type': 'like',
+                               'units': 'metric',
+                               'APPID': key},
+                       timeout=10)  # Задаем таймаут
+    data = res.json()
+    print(data)
+    if len(data['list']) == 0:
+        flash('Город введен не верно')
+        return redirect(request.url)
+
+    temp = data['list'][0]['main']  # читаем из data=res.json
+    params = {}  # пустой словарь для передачи параметров в render weather.html
+    params['temper'] = temp['temp']
+    params['feel'] = temp['feels_like']
+    params['press'] = temp['pressure']
+    params['humid'] = temp['humidity']
+
+    return render_template('/', title=f'Погода в городе {city}', form=request.form, params=params)
+
+
 # обработка ошибки сервера 401
 # Пользователь не авторизован
 # для просмотра данной страницы
@@ -71,11 +109,114 @@ def http_401_handler(error):
     return render_template('error401.html', title='Требуется аутентификация')
 
 
+@app.route('/contacts', methods=['GET', 'POST'])
+def contacts():
+    form = MailForm()
+    params = {}
+    if form.validate_on_submit():
+        name = form.username.data  # получили имя с формы
+        params['name'] = name  # добавили ключ и значение к словарю params
+        phone = form.phone.data
+        params['phone'] = phone
+        email = form.email.data
+        params['email'] = email
+        message = form.message.data
+        params['message'] = message
+        params['page'] = request.url
+
+        text = f"""
+        Пользователь {name} оставил Вам сообщение:
+        {message}
+        Его телефон: {phone},
+        E-mail: {email},
+        Cтраница: {request.url}.
+        """
+
+        # Отправка сообщения в Telegram
+        telegram_token = 'YOUR_BOT_TOKEN'  # Замените на ваш токен
+        chat_id = 'YOUR_CHAT_ID'  # Замените на ваш chat_id
+        telegram_url = f'https://api.telegram.org/bot{telegram_token}/sendMessage'
+
+        # Формируем данные для запроса
+        payload = {
+            'chat_id': chat_id,
+            'text': text,
+            'parse_mode': 'HTML'
+        }
+
+        # Отправляем сообщение в Telegram
+        try:
+            requests.post(telegram_url, json=payload)
+        except Exception as e:
+            print(f"Ошибка при отправке сообщения в Telegram: {e}")
+
+        text_to_user = f"""
+        Уважаемый (ая) {name}!
+        Ваши данные:
+        Телефон: {phone},
+        E-mail: {email},
+        успешно получены.
+        Ваше сообщение:
+        {message}
+        принято рассмотрению.
+        Отправлено со страницы: {request.url}.
+        """
+
+        return render_template('mailresult.html',
+                               title='Ваши данные',
+                               params=params)
+    return render_template('contacts.html', title='Наши контакты', form=form)
+# @app.route('/contacts', methods=['GET', 'POST'])
+# def contacts():
+#     form = MailForm()
+#     params = {}
+#     if form.validate_on_submit():
+#         name = form.username.data  # получили имя с формы
+#         params['name'] = name  # добавили ключ и значение к словарю params
+#         phone = form.phone.data
+#         params['phone'] = phone
+#         email = form.email.data
+#         params['email'] = email
+#         message = form.message.data
+#         params['message'] = message
+#         params['page'] = request.url
+#
+#         text = f"""
+#         Пользователь {name} оставил Вам сообщение:
+#         {message}
+#         Его телефон: {phone},
+#         E-mail: {email},
+#         Cтраница: {request.url}.
+#         """
+#         text_to_user = f"""
+#         Уважаемый (ая) {name}!
+#         Ваши данные:
+#         Телефон: {phone},
+#         E-mail: {email},
+#         успешно получены.
+#         Ваше сообщение:
+#         {message}
+#         принято рассмотрению.
+#         Отправлено со страницы: {request.url}.
+#         """
+#         # send_mail(email, 'Ваши данные на сайте', text_to_user)
+#         # send_mail('mrharut@yandex.ru', 'Запрос с сайта', text)
+#         return render_template('mailresult.html',
+#                                title='Ваши данные',
+#                                params=params)
+#     return render_template('contacts.html', title='Наши контакты', form=form)
+
+
 # обработка ошибки сервера 404
 # Страница не найдена
 @app.errorhandler(404)
 def http_404_handler(error):
     return render_template('error404.html', title='Контент не найден')
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -191,12 +332,14 @@ def edit_news(id):
     return render_template('add_news.html', title='Редактирование новости',
                            form=form)
 
+
 @app.route('/blog')
 def blog():
     # if current_user.is_admin():
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.is_private == False)
     return render_template('blog.html', title='Новости', news=news)
+
 
 # удаление новости
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
@@ -273,12 +416,6 @@ def register():
 @app.route('/success')
 def success():
     return redirect(url_for('index'))
-
-
-@app.route('/')
-@app.route('/index')
-def index():
-    return render_template("index.html")
 
 
 if __name__ == '__main__':

@@ -1,19 +1,181 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>О нас</h1>
-    <p>{{ text }}</p>
+ <!-- Фото и инфо -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Левая колонка с каруселью -->
+            <div class="col-md-6">
+                <div id="carouselExample" class="carousel slide" data-ride="carousel" data-interval="3000">
+                    <ol class="carousel-indicators">
+                        <li data-target="#carouselExample" data-slide-to="0" class="active"></li>
+                        <li data-target="#carouselExample" data-slide-to="1"></li>
+                        <li data-target="#carouselExample" data-slide-to="2"></li>
+                        <li data-target="#carouselExample" data-slide-to="3"></li>
+                    </ol>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="d-block w-100 rounded" src="static/images/apart/15.png" alt="План">
+                            <div class="carousel-caption d-none d-md-block">
+
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100 rounded" src="static/images/apart/14.png" alt="Кухня2">
+                            <div class="carousel-caption d-none d-md-block">
+                                <p>Кухня</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100 rounded" src="static/images/apart/12.png" alt="Коридор1">
+                            <div class="carousel-caption d-none d-md-block">
+                                <p>Коридор</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <img class="d-block w-100 rounded" src="static/images/apart/11.png" alt="Коридор2">
+                            <div class="carousel-caption d-none d-md-block">
+                                <p>Коридор</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Правая колонка с текстом -->
+            <div class="col-md-6 d-flex align-items-center">
+                <div>
+                    <h2>О КВАРТИРЕ:</h2>
+                    <ul>
+                        <li>Тип жилья - Вторичка</li>
+                        <li>Этаж – 7/11</li>
+                        <li>Общая площадь: 73.4 кв.м.</li>
+                        <li>Площадь квартиры: 69.9 кв.м. + 3.5 кв.м. Балкон</li>
+                        <li>Комнаты изолированные: 17.1 + 23.2 кв.м. (с гардеробной 3.1 кв.м.)</li>
+                        <li>Кухня 15.1 кв.м. с кухонной мебелью</li>
+                        <li>Высота потолков: 2,75 м</li>
+                        <li>Юго-восточная сторона (нежное солнце)</li>
+                        <li>Высокий уровень шумоизоляции</li>
+                        <li>Установлены дерево-алюминиевые двухкамерные стеклопакеты с клапанами проветривания</li>
+                        <li>Защита от протекания воды — сливной трап в полу ванной комнаты, гидроизоляция</li>
+                        <li>Две гардеробные: в прихожей и комнате</li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--    Конец фото и инфо-->
+    <br>
+    <!--Текстовый блок-->
+    <div class="background">
+        <div class="row justify-content-center">
+            <div class="card bg-lig">
+                <div class="col-lg-12">
+                    <div class="house-info">
+                    <h2>О ДОМЕ:</h2>
+                    <br>
+                    <ul>
+                        <p>Дом монолит 2010 г. п. Застройщик «ЮИТ ДОМ» - ЭТО ФИНСКОЕ КАЧЕСТВО</p>
+                        <br>
+                        <p>Профессиональная Управляющая компания от застройщика ЮИТ (YIT) гарантирует правильную
+                            эксплуатацию зданий. Жизнь, как в кирпичном доме — в жару прохладно, в морозы тепло</p>
+                        <br>
+                        <li>Парадные и территория чистые, красивые, ухоженные</li>
+                        <li>Скверы во дворе комплекса шикарные, для сезонного ухода за растениями привлекается ландшафтное бюро</li>
+                        <li>На первом этаже: магазины, аптеки, кафе, пункты выдачи, частный детский сад</li>
+                        <li>В шаговой доступности: школы, детские сады, поликлиники, банки, рестораны, парки и другие
+                            объекты социальной направленности</li>
+                        <br>
+
+                        <li>Вход в подъезд без ступенек, что удобно для мам с колясками</li>
+                        <li>Въезд оборудован шлагбаумом</li>
+                        <li>Бдительные охранники (круглосуточно) и единый пульт видеонаблюдения (камеры на территории,
+                            этажах и лифтах)
+                        </li>
+                        <li>Диспетчерская служба открыта для жильцов ежедневно с 8 до 22 часов, приём заявок круглосуточно
+                            по телефону и электронной почте</li>
+                        <br>
+                        <li>Качественная гидроизоляция в квартирах, для устранения возможности затопления соседей</li>
+                        <li>Все трубы спрятаны в стенах</li>
+                        <li>Радиаторы с терморегуляторами для комфортной температуры в помещении</li>
+                        <li>На площадке этажа всего 6 квартир</li>
+
+                    </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--Конец текстовый блок-->
+<br>
+<!--Фото-->
+<div id="carouselExampleIndicators" class="carousel slide">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                    aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                    aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
+                    aria-label="Slide 4"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4"
+                    aria-label="Slide 5"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5"
+                    aria-label="Slide 6"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="6"
+                    aria-label="Slide 7"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="7"
+                    aria-label="Slide 8"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="static/images/apart/13.png" class="d-block w-100" alt="apart13">
+            </div>
+            <div class="carousel-item">
+                <img src="static/images/apart/14.png" class="d-block w-100" alt="apart14">
+            </div>
+            <div class="carousel-item">
+                <img src="static/images/apart/5.png" class="d-block w-100" alt="apart5">
+            </div>
+            <div class="carousel-item">
+                <img src="static/images/apart/6.png" class="d-block w-100" alt="apart6">
+            </div>
+            <div class="carousel-item">
+                <img src="static/images/apart/2.png" class="d-block w-100" alt="apart2">
+            </div>
+            <div class="carousel-item">
+                <img src="static/images/apart/3.png" class="d-block w-100" alt="apart3">
+            </div>
+            <div class="carousel-item">
+                <img src="static/images/apart/4.png" class="d-block w-100" alt="apart4">
+            </div>
+            <div class="carousel-item">
+                <img src="static/images/apart/15.png" class="d-block w-100" alt="apart15">
+            </div>
+        </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                    data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                    data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+
+</div>
 {% endblock %}
 
-{% block footer %}
-    <!--подвал-->
-    <br>
-    <footer class="bg-body-tertiary text-center text-lg-start">
-        <!-- Copyright -->
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-            © 2024 если кликнуть на эбаут
-        </div>
-        <!-- Copyright -->
-    </footer>
-    <!--подвал end-->
-{% endblock %}

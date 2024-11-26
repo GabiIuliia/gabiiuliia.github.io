@@ -1,19 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Самые большие буквы</h1>
-    <p>{{ text }}</p>
-{% endblock %}
-
-{% block footer %}
-    <!--подвал-->
-    <br>
-    <footer class="bg-body-tertiary text-center text-lg-start">
-        <!-- Copyright -->
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-            © 2024 АВЕНТИН от Юлии
-        </div>
-        <!-- Copyright -->
-    </footer>
-    <!--подвал end-->
+    {% if not form %}
+<h3 class="text-center"> Мы поможем Вам узнать погоду в любом городе, куда Вы захотите переехать  </h3>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="alert alert-danger" role="alert">
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+<form class="login-form" method="post">
+    <div class="from-group">
+        <label for="city">Введите город: </label>
+        <br><br>
+        <input type="text" name="city" id="city" class="form-control">
+        <br><br>
+        <button type="submit" class="btn btn-primary">Узнать</button>
+    </div>
+</form>
+{% else %}
+<h1 class="text-center">Погода: город {{ form['city'] }}</h1>
+<h2>Температура: {{ params['temper'] }}°С</h2>
+<h2>Ощущается как: {{ params['feel'] }}°С</h2>
+<h2>Давление: {{ params['press'] }} мм.рт.столба</h2>
+<h2>Влажность: {{ params['humid'] }}%</h2>
+{% endif %}
 {% endblock %}

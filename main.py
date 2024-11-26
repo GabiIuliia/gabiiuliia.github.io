@@ -1,27 +1,22 @@
-import configparser
-import datetime
 import json
-import os
-from operator import index
+
+from sqlalchemy import or_
 
 from config_test import config
 from data import db_session
 from data.users import User
 from data.news import News
-from forms.user import RegisterForm
 from forms.add_news import NewsForm
 
 import requests
-from flask import Flask, url_for, request, render_template, abort, jsonify
-from flask import flash, redirect, make_response, session
+from flask import Flask, url_for, request, render_template, abort
+from flask import flash, redirect
 from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_login import current_user
-from werkzeug.utils import secure_filename
 
 from forms.loginform import LoginForm
-from mailform import MailForm
-from ormbase import db
-from registrationform import RegistrationForm
+from forms.mailform import MailForm
+from forms.registrationform import RegistrationForm
 from telegram_bot import send_message_to_telegram
 
 
@@ -40,14 +35,11 @@ def configurate_app():
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app_database.db'  # Или другой URI для вашей базы данных
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
-    with app.app_context():
-        db.create_all()
 
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-def weather():
+def index():
     if request.method == 'GET':
         return render_template('index.html', title='Главная', form=None)
     elif request.method == 'POST':
@@ -114,7 +106,7 @@ def contacts():
 
         # Отправка сообщения в Telegram
         telegram_token = '7699939072:AAG1_hl8gEDp4mOmOeYX56g-2KNcij2jlvQ'  # Токен вашего бота
-        chat_id = '987654321'  # Замените на ваш chat_id
+        chat_id = '5135123753'  # Замените на ваш chat_id
         send_message_to_telegram(telegram_token, chat_id, text)  # Вызов функции отправки сообщения
 
         text_to_user = f"""
@@ -249,31 +241,6 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if request.method == 'POST':
-        form = LoginForm()
-        if form.validate_on_submit():
-            db_sess = db_session.create_session()
-            user = db_sess.query(User).filter_by(email=form.email.data).first()
-            print('user ' + user.__str__())
-            if user and user.check_password(password=form.password.data):
-                login_user(user, remember=form.remember_me.data, force=True)
-                return redirect(url_for('success'))
-            else:
-                flash("Unknown user or wrong password")
-
-    return render_template('login.html', title='Авторизация', form=form)
-
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect('/')
-
-
 # создаем сессию по проверке в базе, есть ли он
 @login_manager.user_loader
 def user_loader(user_id):
@@ -367,7 +334,12 @@ def edit_news(id):
 def blog():
     # if current_user.is_admin():
     db_sess = db_session.create_session()
-    news = db_sess.query(News).filter(News.is_private == False)
+    news = db_sess.query(News).filter(
+        or_(
+            News.is_private == False,
+            News.user == current_user,
+        )
+    )
     return render_template('blog.html', title='Отзывы', news=news)
 
 
@@ -386,60 +358,51 @@ def news_delete(id):
     return redirect('/blog')
 
 
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     form = RegisterForm()
-#     if form.validate_on_submit():
-#         if form.password.data != form.password_again.data:
-#             return render_template('register.html', title='Регистрация',
-#                                    form=form, message='Пароли не совпадают')
-#         db_sess = db_session.create_session()
-#         if db_sess.query(User).filter(User.email == form.email.data).first():
-#             return render_template('register.html', title='Регистрация',
-#                                    form=form, message=f'Пользователь с E-mail {form.email.data} уже есть')
-#         user = User(
-#             name=form.name.data,
-#             email=form.email.data,
-#             about=form.about.data
-#         )
-#         user.set_password(form.password.data)
-#         db_sess.add(user)
-#         db_sess.commit()
-#         return redirect('/login')
-#     return render_template('register.html', title='Регистрация', form=form)
-#
-#
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         user = db_sess.query(User).filter(User.email == form.email.data).first()
-#         if user and user.check_password(form.password.data):
-#             login_user(user, remember=form.remember_me.data)
-#             return redirect('/')  # request.url- вернуться туда откуда пришел, либо на нужную страницу
-#         return render_template('login.html', title='Ошибка авторизации',
-#                                message='Неправильная пара: логин - пароль!',
-#                                form=form)
-#     return render_template('login.html', title='Авторизация', form=form)
-#
-#
-# # 1. Добавить требуемый пункт в меню
-# # 2. Создать .html-файл для расширения шаблона
-# # 3. Отрендерить, создав соответствующий декоратор
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if request.method == 'POST':
+        form = LoginForm()
+        if form.validate_on_submit():
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).filter_by(email=form.email.data).first()
+            print('user ' + user.__str__())
+            if user and user.check_password(password=form.password.data):
+                login_user(user, remember=form.remember_me.data, force=True)
+                return redirect(url_for('success'))
+            else:
+                flash("Unknown user or wrong password")
+
+    return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data,
-                    password_hash=form.password.data)  # Не забудьте захешировать пароль!
         dbsession = db_session.create_session()
-        user.set_password(form.password.data)
-        dbsession.add(user)
-        dbsession.commit()
-        return redirect(url_for('index'))  # Перенаправляем на главную страницу
+        has_user_with_email = dbsession.query(User).filter_by(email=form.email.data).first() is None
+        has_user_with_username = dbsession.query(User).filter_by(username=form.username.data).first() is None
+        if not has_user_with_email or not has_user_with_username :
+            flash("Exits user")
+        elif not form.password.__eq__(form.confirm_password):
+            flash("Wrong confirm password")
+        else:
+            user = User(username=form.username.data, email=form.email.data,
+                    password_hash=form.password.data)  # Не забудьте захешировать пароль!
+
+            user.set_password(form.password.data)
+            dbsession.add(user)
+            dbsession.commit()
+            return redirect(url_for('index'))  # Перенаправляем на главную страницу
     return render_template('register.html', title='Регистрация', form=form)
 
 

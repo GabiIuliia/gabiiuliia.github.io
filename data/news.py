@@ -4,7 +4,6 @@ import sqlalchemy
 from sqlalchemy import orm
 from sqlalchemy_serializer import SerializerMixin
 from data.db_session import SqlAlchemyBase
-from .users import User  # Импортируем класс User
 
 
 class News(SqlAlchemyBase, SerializerMixin):

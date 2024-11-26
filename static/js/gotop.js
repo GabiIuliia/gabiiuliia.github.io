@@ -4,13 +4,13 @@ const goTopBtn = document.querySelector("#go-top");
 // обработчик события прокрутки окна
 window.addEventListener("scroll", trackScroll);
 // обработчик нажатия на кнопку (идём наверх)
-window.addEventListener("click", goTop);
+goTopBtn.addEventListener("click", goTop);
 
 function trackScroll() {
     // положение "верхушки" страницы
     const scrolled = window.scrollY;
     // высота клиентской области окна
-    const coords = document.documentElement.clientHeight;
+    const coords = window.screen.height / 2;
     // если прокрутили на один экран, то кнопка появится
     if (scrolled > coords)
         goTopBtn.classList.add("go-top--show");

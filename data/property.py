@@ -1,14 +1,9 @@
-from enum import unique
+# Пользователи нашего сайта
 
-# # Пользователи нашего сайта
-
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy import orm
 
 from data.db_session import SqlAlchemyBase
-from ormbase import db  # Предполагаем, что SQLAlchemy инициализирован
-
 
 
 class Property(SqlAlchemyBase):

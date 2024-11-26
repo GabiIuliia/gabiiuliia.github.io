@@ -1,12 +1,8 @@
-from enum import unique
-
-
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy import orm
 from datetime import datetime
 
 from data.db_session import SqlAlchemyBase
-from ormbase import db  # Предполагаем, что SQLAlchemy инициализирован
 
 
 class Comment(SqlAlchemyBase):

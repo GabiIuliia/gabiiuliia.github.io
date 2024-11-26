@@ -1,0 +1,17 @@
+{% extends "base.html" %}  <!-- Замените "base.html" на имя вашего базового шаблона, если оно другое -->
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Ваши данные успешно отправлены!</h1>
+    <div class="alert alert-success" role="alert">
+        <p><strong>Имя:</strong> {{ params['name'] }}</p>
+        <p><strong>Телефон:</strong> {{ params['phone'] }}</p>
+        <p><strong>Email:</strong> {{ params['email'] }}</p>
+        <p><strong>Сообщение:</strong> {{ params['message'] }}</p>
+        <p><strong>Страница:</strong> <a href="{{ params['page'] }}">{{ params['page'] }}</a></p>
+    </div>
+    <div class="text-center">
+        <a href="/contacts" class="btn btn-primary">Вернуться на страницу контактов</a>
+    </div>
+</div>
+{% endblock %}
